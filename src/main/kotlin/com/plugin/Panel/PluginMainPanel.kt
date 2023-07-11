@@ -6,9 +6,13 @@ import com.intellij.openapi.wm.ToolWindow
 import com.intellij.openapi.wm.ToolWindowFactory
 import com.intellij.ui.content.ContentFactory
 import org.jetbrains.annotations.NotNull
+import java.awt.CardLayout
 import javax.swing.*
 
-class PluginPanel : ToolWindowFactory, DumbAware {
+class PluginMainPanel : ToolWindowFactory, DumbAware {
+    private val contentPanel = JPanel()
+    private val cardLayout = CardLayout()
+
     override fun createToolWindowContent(
         @NotNull project: Project,
         @NotNull toolWindow: ToolWindow
@@ -19,13 +23,25 @@ class PluginPanel : ToolWindowFactory, DumbAware {
 
         val runButton = createTextButton("Run")
         val stopButton = createTextButton("Stop")
-        val voiceRecorderPlugin = createTextButton("Voice Recorder")
+        val voiceRecorderButton = createVoiceRecorder("Voice Recorder")
         val settingsButton = createSettingsButton()
 
-        contentPanel.add(runButton)
-        contentPanel.add(stopButton)
-        contentPanel.add(voiceRecorderPlugin)
+//        val mainPanel = createMainPanel()
+//        mainPanel.add(runButton)
+//        mainPanel.add(stopButton)
+//        mainPanel.add(voiceRecorderButton)
+//        mainPanel.add(settingsButton)
+
+//        contentPanel.layout = cardLayout
+//        contentPanel.add(mainPanel,"main")
+//        contentPanel.add(createMainPanel(),"main")
+
+        contentPanel.add(runButton,)
+        contentPanel.add(stopButton,)
+        contentPanel.add(voiceRecorderButton)
         contentPanel.add(settingsButton)
+
+//        cardLayout.show(contentPanel,"main")
     }
 
     private fun createTextButton(text: String): JButton {
@@ -34,6 +50,22 @@ class PluginPanel : ToolWindowFactory, DumbAware {
             // Handle button click event here
         }
         return button
+    }
+
+    private fun createVoiceRecorder(text: String): JButton {
+        val test : Int = 2
+        val button = JButton(text)
+        button.addActionListener{
+            val dialog = JDialog()
+            dialog.contentPane.add(VoiceRecorderPanel())
+            dialog.pack()
+            dialog.isVisible = true
+        }
+        return button
+    }
+
+    private fun createMainPanel(): JPanel {
+        return JPanel()
     }
 
 
@@ -63,7 +95,7 @@ class PluginPanel : ToolWindowFactory, DumbAware {
         settingsButton.addActionListener {
             val parentFrame = SwingUtilities.getWindowAncestor(settingsButton)
             if (parentFrame is java.awt.Frame) {
-                 val buttonLocation = settingsButton.locationOnScreen
+                val buttonLocation = settingsButton.locationOnScreen
                 val popupX = buttonLocation.x
                 val popupY = buttonLocation.y + settingsButton.height
                 popupMenu.show(parentFrame, popupX, popupY)
