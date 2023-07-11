@@ -63,7 +63,7 @@ class PluginPanel : ToolWindowFactory, DumbAware {
         settingsButton.addActionListener {
             val parentFrame = SwingUtilities.getWindowAncestor(settingsButton)
             if (parentFrame is java.awt.Frame) {
-                val buttonLocation = settingsButton.locationOnScreen
+                 val buttonLocation = settingsButton.locationOnScreen
                 val popupX = buttonLocation.x
                 val popupY = buttonLocation.y + settingsButton.height
                 popupMenu.show(parentFrame, popupX, popupY)
