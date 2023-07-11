@@ -1,15 +1,14 @@
-package com.plugin.newplugin
+package com.plugin.Panel
 
 import com.intellij.openapi.project.DumbAware
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.wm.ToolWindow
 import com.intellij.openapi.wm.ToolWindowFactory
-import com.intellij.ui.content.Content
 import com.intellij.ui.content.ContentFactory
 import org.jetbrains.annotations.NotNull
 import javax.swing.*
 
-class OrderFoodAction : ToolWindowFactory, DumbAware {
+class PluginPanel : ToolWindowFactory, DumbAware {
     override fun createToolWindowContent(
         @NotNull project: Project,
         @NotNull toolWindow: ToolWindow
@@ -20,10 +19,12 @@ class OrderFoodAction : ToolWindowFactory, DumbAware {
 
         val runButton = createTextButton("Run")
         val stopButton = createTextButton("Stop")
+        val voiceRecorderPlugin = createTextButton("Voice Recorder")
         val settingsButton = createSettingsButton()
 
         contentPanel.add(runButton)
         contentPanel.add(stopButton)
+        contentPanel.add(voiceRecorderPlugin)
         contentPanel.add(settingsButton)
     }
 
@@ -34,6 +35,7 @@ class OrderFoodAction : ToolWindowFactory, DumbAware {
         }
         return button
     }
+
 
 
     private fun createSettingsButton(): JButton {
@@ -47,6 +49,16 @@ class OrderFoodAction : ToolWindowFactory, DumbAware {
 
         popupMenu.add(pathFolderMenuItem)
         popupMenu.add(tokenSubMenu)
+
+        pathFolderMenuItem.addActionListener {
+            val fileChooser = JFileChooser()
+            fileChooser.fileSelectionMode = JFileChooser.DIRECTORIES_ONLY
+            val dialogResult = fileChooser.showDialog(null, "Select Folder")
+            if (dialogResult == JFileChooser.APPROVE_OPTION) {
+                val selectedFile = fileChooser.selectedFile
+                // Use the selected file here
+            }
+        }
 
         settingsButton.addActionListener {
             val parentFrame = SwingUtilities.getWindowAncestor(settingsButton)
