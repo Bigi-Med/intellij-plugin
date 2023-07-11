@@ -10,8 +10,6 @@ import java.awt.CardLayout
 import javax.swing.*
 
 class PluginMainPanel : ToolWindowFactory, DumbAware {
-    private val contentPanel = JPanel()
-    private val cardLayout = CardLayout()
 
     override fun createToolWindowContent(
         @NotNull project: Project,
@@ -26,22 +24,10 @@ class PluginMainPanel : ToolWindowFactory, DumbAware {
         val voiceRecorderButton = createVoiceRecorder("Voice Recorder")
         val settingsButton = createSettingsButton()
 
-//        val mainPanel = createMainPanel()
-//        mainPanel.add(runButton)
-//        mainPanel.add(stopButton)
-//        mainPanel.add(voiceRecorderButton)
-//        mainPanel.add(settingsButton)
-
-//        contentPanel.layout = cardLayout
-//        contentPanel.add(mainPanel,"main")
-//        contentPanel.add(createMainPanel(),"main")
-
-        contentPanel.add(runButton,)
-        contentPanel.add(stopButton,)
+        contentPanel.add(runButton)
+        contentPanel.add(stopButton)
         contentPanel.add(voiceRecorderButton)
         contentPanel.add(settingsButton)
-
-//        cardLayout.show(contentPanel,"main")
     }
 
     private fun createTextButton(text: String): JButton {
@@ -53,9 +39,8 @@ class PluginMainPanel : ToolWindowFactory, DumbAware {
     }
 
     private fun createVoiceRecorder(text: String): JButton {
-        val test : Int = 2
         val button = JButton(text)
-        button.addActionListener{
+        button.addActionListener {
             val dialog = JDialog()
             dialog.contentPane.add(VoiceRecorderPanel())
             dialog.pack()
@@ -63,12 +48,6 @@ class PluginMainPanel : ToolWindowFactory, DumbAware {
         }
         return button
     }
-
-    private fun createMainPanel(): JPanel {
-        return JPanel()
-    }
-
-
 
     private fun createSettingsButton(): JButton {
         val settingsButton = JButton("Settings")
@@ -91,6 +70,8 @@ class PluginMainPanel : ToolWindowFactory, DumbAware {
                 // Use the selected file here
             }
         }
+
+
 
         settingsButton.addActionListener {
             val parentFrame = SwingUtilities.getWindowAncestor(settingsButton)
