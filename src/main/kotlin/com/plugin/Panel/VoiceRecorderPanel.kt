@@ -15,14 +15,12 @@ class VoiceRecorderPanel : JPanel(), ToolWindowFactory, DumbAware {
     private val audioFormat: AudioFormat = AudioFormat(44100f, 16, 2, true, true)
     private lateinit var targetDataLine: TargetDataLine
     private var isRecording: Boolean = false
-
     init {
         val startButton = createTextButton("Start")
         val pauseButton = createTextButton("Pause")
         val endButton = createTextButton("End")
 
         startButton.addActionListener {
-            println("FIRST PRINT")
             startRecording()
         }
 
@@ -42,13 +40,22 @@ class VoiceRecorderPanel : JPanel(), ToolWindowFactory, DumbAware {
         if (!isRecording) {
             try {
                 val dataLineInfo = DataLine.Info(TargetDataLine::class.java, audioFormat)
+                if (!AudioSystem.isLineSupported(dataLineInfo)) {
+                    println("Audio format is not supported.")
+                    return
+                }
+                println("Audio format supported")
+                if (audioFormat.sampleRate.toInt() != 44100 || audioFormat.sampleSizeInBits % 8 != 0
+                    || (audioFormat.channels != 1 && audioFormat.channels != 2)) {
+                    println("Incompatible audio format with WAV file extension.")
+                    return
+                }
+                println("Audio format compatible with extension, continuing recording ....")
                 targetDataLine = AudioSystem.getLine(dataLineInfo) as TargetDataLine
                 targetDataLine.open(audioFormat)
                 targetDataLine.start()
 
-                val outerThis = this
                 Thread {
-                    println("INSIDE THREADS")
                    isRecording = true
                     val byteArrayOutputStream = ByteArrayOutputStream()
 
@@ -86,18 +93,57 @@ class VoiceRecorderPanel : JPanel(), ToolWindowFactory, DumbAware {
     }
     private fun saveToFile(audioData: ByteArray, filePath: String) {
         try {
+            if (audioData.isEmpty()) {
+                println("Audio data is empty.")
+                return
+            }
+            println("Audio data recorded, saving to file ....")
             val file = File(filePath)
             file.createNewFile()
 
+            val inputStream = ByteArrayInputStream(audioData)
             val outputStream = BufferedOutputStream(FileOutputStream(file))
-            outputStream.write(audioData)
-            outputStream.close()
 
+            val buffer = ByteArray(4096)
+            var read: Int
+            var total: Long = 0
+
+            while (inputStream.read(buffer).also { read = it } != -1) {
+                outputStream.write(buffer, 0, read)
+                total += read.toLong()
+            }
+
+            outputStream.close()
+            inputStream.close()
+            verifyAudioCodec(file)
             println("Audio saved to: ${file.absolutePath}")
         } catch (e: IOException) {
             e.printStackTrace()
         }
     }
+    private fun verifyAudioCodec(filePath: String): Boolean {
+        try {
+            val audioFile = File(filePath)
+            val audioInputStream = AudioSystem.getAudioInputStream(audioFile)
+            val audioFormat = audioInputStream.format
+            val audioCodec = audioFormat.encoding.toString()
+
+            // Check if the audio codec is supported
+            val supportedCodecs = listOf("PCM_SIGNED", "PCM_UNSIGNED", "MP3", "FLAC")
+            if (!supportedCodecs.contains(audioCodec)) {
+                println("Unsupported audio codec: $audioCodec")
+                return false
+            }
+
+            // Other checks or processing logic if needed
+
+            return true
+        } catch (e: Exception) {
+            e.printStackTrace()
+            return false
+        }
+    }
+
 
 
     override fun createToolWindowContent(
