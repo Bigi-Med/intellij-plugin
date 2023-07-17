@@ -5,8 +5,11 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.wm.ToolWindow
 import com.intellij.openapi.wm.ToolWindowFactory
 import com.intellij.ui.content.ContentFactory
+import com.jetbrains.rd.util.Date
 import org.jetbrains.annotations.NotNull
 import java.io.*
+import java.text.SimpleDateFormat
+import java.util.*
 import javax.sound.sampled.*
 import javax.swing.JButton
 import javax.swing.JPanel
@@ -65,7 +68,9 @@ class VoiceRecorderPanel : JPanel(), ToolWindowFactory, DumbAware {
 
                     byteArrayOutputStream.close()
 
-                    audioFile = File.createTempFile("audio", ".wav")
+                    val timeStamp = SimpleDateFormat("yyyy-MM-dd 'T' HH-mm-ss").format(Date())
+                    val timeStampStr = timeStamp.toString();
+                    audioFile = File("$timeStampStr.wav")
                     val audioData = byteArrayOutputStream.toByteArray()
                     saveToFile(audioData, audioFile)
 
