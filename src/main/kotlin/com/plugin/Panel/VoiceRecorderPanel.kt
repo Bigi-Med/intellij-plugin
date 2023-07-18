@@ -91,7 +91,6 @@ class VoiceRecorderPanel : JPanel(), ToolWindowFactory, DumbAware {
         }
     }
 
-
     private fun pauseRecording() {
         if (isRecording && !isPaused) {
             isPaused = true
