@@ -18,7 +18,10 @@ class VoiceRecorderPanel : JPanel(), ToolWindowFactory, DumbAware {
     private val  audioFormat = AudioFormat(AudioFormat.Encoding.PCM_SIGNED, 44100f, 16, 2, 4, 44100f, true)
     private lateinit var targetDataLine: TargetDataLine
     private var isRecording: Boolean = false
+    private var isPaused: Boolean = false
     private lateinit var audioFile: File
+    private lateinit var recordedAudio: ByteArrayOutputStream
+    private var pausedPosition: Long = 0L
     init {
         val startButton = createTextButton("Start")
         val pauseButton = createTextButton("Pause")
@@ -28,7 +31,13 @@ class VoiceRecorderPanel : JPanel(), ToolWindowFactory, DumbAware {
         }
 
         pauseButton.addActionListener {
-            pauseRecording()
+            if (isRecording) {
+                if (isPaused) {
+                    resumeRecording()
+                } else {
+                    pauseRecording()
+                }
+            }
         }
 
         endButton.addActionListener {
@@ -84,8 +93,20 @@ class VoiceRecorderPanel : JPanel(), ToolWindowFactory, DumbAware {
 
 
     private fun pauseRecording() {
-        // Pause recording logic here
-        // You can add functionality to pause the recording if desired
+        if (isRecording && !isPaused) {
+            isPaused = true
+            pausedPosition = targetDataLine.microsecondPosition
+            targetDataLine.stop()
+            println("Recording paused.")
+        }
+    }
+
+    private fun resumeRecording() {
+        if (isRecording && isPaused) {
+            isPaused = false
+            targetDataLine.start()
+            println("Recording resumed.")
+        }
     }
 
     private fun stopRecording() {
