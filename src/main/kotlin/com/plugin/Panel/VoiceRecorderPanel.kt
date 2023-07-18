@@ -48,7 +48,7 @@ class VoiceRecorderPanel : JPanel(), ToolWindowFactory, DumbAware {
                     return
                 }
 
-                println("recording ...")
+                println("Recording ...")
 
                 targetDataLine = AudioSystem.getLine(dataLineInfo) as TargetDataLine
                 targetDataLine.open(audioFormat)
@@ -68,9 +68,9 @@ class VoiceRecorderPanel : JPanel(), ToolWindowFactory, DumbAware {
 
                     byteArrayOutputStream.close()
 
-                    val timeStamp = SimpleDateFormat("yyyy-MM-dd 'T' HH-mm-ss").format(Date())
-                    val timeStampStr = timeStamp.toString();
-                    audioFile = File("$timeStampStr.wav")
+                    val desktopPath = System.getProperty("user.home") + File.separator + "Desktop"
+                    val fileName = SimpleDateFormat("yyyy-MM-dd'T'HH-mm-ss").format(Date()) + ".wav"
+                    audioFile = File(desktopPath, fileName)
                     val audioData = byteArrayOutputStream.toByteArray()
                     saveToFile(audioData, audioFile)
 
