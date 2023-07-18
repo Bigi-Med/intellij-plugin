@@ -27,7 +27,7 @@
            
     </extensions>
 
-
+    <idea-version since-build="2021.2"></idea-version>
 
 
 </idea-plugin>
